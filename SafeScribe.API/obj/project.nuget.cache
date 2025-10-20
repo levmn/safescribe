@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "JsMAbXfaerc=",
+  "success": true,
+  "projectFilePath": "/home/ini/levi/codigo/SafeScribe/SafeScribe.API/SafeScribe.API.csproj",
+  "expectedPackageFiles": [
+    "/home/ini/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
+    "/home/ini/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
