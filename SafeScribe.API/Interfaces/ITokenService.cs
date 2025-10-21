@@ -1,6 +1,6 @@
 using SafeScribe.API.Models;
 
-namespace SafeScribe.API.Services
+namespace SafeScribe.API.Interfaces
 {
     public interface ITokenService
     {
