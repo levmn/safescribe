@@ -5,10 +5,13 @@ using SafeScribe.API.Data;
 using Microsoft.OpenApi.Models;
 using SafeScribe.API.Services;
 using SafeScribe.API.Interfaces;
-using SafeScribe.API.Middlewares;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -56,24 +59,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            // Verifica se o emissor do token é válido
-            ValidateIssuer = true,
-            // Verifica se o token é destinado ao público correto
-            ValidateAudience = true,
-            // Rejeita tokens expirados
-            ValidateLifetime = true,
             // Verifica se a assinatura do token é válida
             ValidateIssuerSigningKey = true,
-
-            // Define valores esperados (vindos do appsettings.json)
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-
             // Cria a chave de validação com base na chave secreta configurada
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
-            ValidateTokenReplay = false,
+            // Verifica se o emissor do token é válido
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
 
+            // Verifica se o token é destinado ao público correto
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+
+            // Rejeita tokens expirados
+            ValidateLifetime = true,
+
+            // Define tempo de expiração do token
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -90,9 +92,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
 app.UseAuthentication();
-app.UseMiddleware<TokenBlacklistMiddleware>();
 app.UseAuthorization();
 
-app.MapControllers();
 app.Run();

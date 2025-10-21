@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SafeScribe.API.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace SafeScribe.API.Controllers
@@ -8,13 +9,14 @@ namespace SafeScribe.API.Controllers
     [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class NotasController : ControllerBase
+    public class NotesController : ControllerBase
     {
         private readonly INoteService _noteService;
 
         private int? GetCurrentUserId()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
             if (int.TryParse(userIdClaim, out var userId))
             {
                 return userId;
@@ -27,7 +29,7 @@ namespace SafeScribe.API.Controllers
             return User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
 
-        public NotasController(INoteService noteService)
+        public NotesController(INoteService noteService)
         {
             _noteService = noteService;
         }

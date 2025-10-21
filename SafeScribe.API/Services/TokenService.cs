@@ -19,10 +19,10 @@ namespace SafeScribe.API.Services
 
         public string GenerateToken(User user)
         {
-            var key = _config["Jwt:Key"] ?? throw new InvalidOperationException("Configuração Jwt:Key não encontrada.");
-            var issuer = _config["Jwt:Issuer"] ?? throw new InvalidOperationException("Configuração Jwt:Issuer não encontrada.");
-            var audience = _config["Jwt:Audience"] ?? throw new InvalidOperationException("Configuração Jwt:Audience não encontrada.");
-            var expireMinutesString = _config["Jwt:ExpireMinutes"] ?? "60";
+            var key = _config["Jwt:Key"];
+            var issuer = _config["Jwt:Issuer"];
+            var audience = _config["Jwt:Audience"];
+            var expireMinutesString = _config["Jwt:ExpireMinutes"];
 
             if (!double.TryParse(expireMinutesString, out var expireMinutes))
             {
@@ -31,12 +31,14 @@ namespace SafeScribe.API.Services
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
-            var claims = new List<Claim>
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var token = new JwtSecurityToken(
@@ -44,7 +46,7 @@ namespace SafeScribe.API.Services
                 audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(expireMinutes),
-                signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
+                signingCredentials: credentials
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
