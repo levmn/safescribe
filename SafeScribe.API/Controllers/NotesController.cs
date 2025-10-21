@@ -37,7 +37,7 @@ namespace SafeScribe.API.Controllers
         // POST 'api/v1/notas'
         // Apenas 'Editor' e 'Admin' podem criar notas.
         [HttpPost]
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "Editor,Admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CriarNota(string title, string content)
@@ -81,7 +81,7 @@ namespace SafeScribe.API.Controllers
         // PUT 'api/v1/notas/{id}'
         // Apenas 'Editor' e 'Admin' podem atualizar.
         [HttpPut("{id}")]
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "Editor,Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

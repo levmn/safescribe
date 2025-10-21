@@ -5,6 +5,7 @@ using SafeScribe.API.Data;
 using Microsoft.OpenApi.Models;
 using SafeScribe.API.Services;
 using SafeScribe.API.Interfaces;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // Rejeita tokens expirados
             ValidateLifetime = true,
 
+            // Garante leitura correta da role
+            RoleClaimType = ClaimTypes.Role,
+
             // Define tempo de expiração do token
             ClockSkew = TimeSpan.Zero
         };
@@ -92,9 +96,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();
